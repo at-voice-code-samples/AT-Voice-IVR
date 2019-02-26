@@ -36,13 +36,31 @@ def record_phrase():
     return response
 
 def play_previous_recording():
-    pass
+    response = '<?xml version="1.0"?>'
+    response += '<Response>'
+    response += '<Say voice="woman">'
+    response += 'Playing your last recorded file</Say>'
+    response += '<Play url="https://something.something"></Play>'
+    response += '</Response'
+    return response
 
 def play_random_recording():
-    pass
+    response = '<?xml version="1.0"?>'
+    response += '<Response>'
+    response += '<Say voice="woman">'
+    response += 'Playing your random recording for the day</Say>'
+    response += '<Play url="https://something.something"></Play>'
+    response += '</Response'
 
 def play_previous_recording_not_found():
-    pass
+    response = '<?xml version="1.0"?>'
+    response += '<Response>'
+    response += '<Say voice="woman">'
+    response += 'No recordings found</Say>'
+    response += '<Play url="https://something.something"></Play>'
+    response += '</Response'
+
+#Define application routes
 
 @app.route("/")
 def index():
@@ -51,4 +69,5 @@ def index():
 
 @app.route("/voice/service", methods=["GET","POST"])
 def voice_service():
-    pass
+    if method == "POST":
+        intro_response()
