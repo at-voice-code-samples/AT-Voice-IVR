@@ -1,7 +1,10 @@
 import os
-from flask import Flask
+from flask import Flask, request
+import redis
+import json
 
 app = Flask(__name__)
+db = redis.Redis('localhost')
 
 #Define methods that build the necessary xml
 def intro_response():
@@ -60,7 +63,7 @@ def play_previous_recording_not_found():
     response += '<Play url="https://something.something"></Play>'
     response += '</Response'
 
-#Define application routes
+#Define application routes and functions
 
 @app.route("/")
 def index():
@@ -71,3 +74,7 @@ def index():
 def voice_service():
     if method == "POST":
         intro_response()
+
+
+if __name__ == "__main__":
+    app.run(host="0.0.0.0", port=os.environ.get("PORT") || 3000, debug=True)
