@@ -77,12 +77,12 @@ def record_phrase():
     response += '</Response>'
     return response
 
-def play_previous_recording():
+def play_previous_recording(file):
     response = '<?xml version="1.0"?>'
     response += '<Response>'
     response += '<Say voice="woman">'
     response += 'Playing your last recorded file</Say>'
-    response += '<Play url="https://something.something"></Play>'
+    response += '<Play url={}></Play>'.format(file)
     response += '</Response'
     return response
 
@@ -115,7 +115,7 @@ def actions_menu():
 #Define level and subscriber details
 
 level = 0
-file = User(file="https://s3.eu-west-2.amazonaws.com/at-voice-sample/play.mp3")
+#file = User(file="https://s3.eu-west-2.amazonaws.com/at-voice-sample/play.mp3")
 
 
 
@@ -161,11 +161,12 @@ def voice_menu():
     str_phone_number = str(phone_number)
     check_phone_number = User.filter_by(phone_number=phone_number).first()
     str_check_phone_number = str(check_phone_number)
+    voice_note_recording = User.filter_by(voice_note).first()
 
-    if value == "1":
+    if value is "1":
         if not phone_number and str_check_phone_number == phone_number:
-            record_phrase()
-        else:
+            actions_menu()
+            level = 2
             db.session.add(
                 phone_number = phone_number,
                 session_id = session_id,
@@ -174,6 +175,41 @@ def voice_menu():
                 file = file
             )
             db.session.commit()
+        else:
+            if level == "2":
+                record_phrase()
+                level = 3
+                db.session.add(
+                    phone_number = phone_number,
+                    session_id = session_id,
+                    level = level,
+                    last_input = value
+                )
+                db.session.commit()
+    elif value is "2":
+        if  str_check_phone_number == phone_number and not voice_note_recording:
+            recorded_file_url = voice_note_recording
+            play_previous_recording(recorded_file_url)
+            level = 2
+            db.session.add(
+                phone_number = request.values.get("Number"),
+                session_id = request.values.get("sessionId"),
+                level = str(level),
+                last_input = request.values.get("dtmfDigits")
+            )
+            db.session.commit()
+        elif str_check_phone_number == phone_number and voice_note_recording is "":
+            play_previous_recording_not_found()
+            level = 2
+            db.session.add(
+                phone_number = phone_number,
+                session_id = session_id,
+                level = level,
+                last_input = value
+                file = file
+            )
+            db.session.commit()
+
 
 
 
